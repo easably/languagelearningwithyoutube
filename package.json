@@ -1,0 +1,55 @@
+{
+    "name": "languagelearningwithyoutube",
+    "description": "Learn english with youtube",
+    "author": "easably",
+    "main": "public/electron.js",
+    "homepage": "https://github.com/easably/languagelearningwithyoutube",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@types/jest": "24.0.19",
+        "@types/node": "12.11.1",
+        "@types/react": "16.9.9",
+        "@types/react-dom": "16.9.2",
+        "cross-env": "^6.0.3",
+        "electron-is-dev": "^1.1.0",
+        "electron-reload": "^1.5.0",
+        "react": "^16.10.2",
+        "react-dom": "^16.10.2",
+        "react-scripts": "3.2.0",
+        "typescript": "3.6.4",
+        "youtube-dl": "^2.0.1"
+    },
+    "scripts": {
+        "react-start": "react-scripts start",
+        "react-build": "react-scripts build",
+        "react-test": "react-scripts test --env=jsdom",
+        "react-eject": "react-scripts eject",
+        "electron-build": "electron-builder",
+        "release": "yarn react-build && electron-builder build --mac --publish=never",
+        "build": "yarn react-build && yarn electron-build",
+        "electron": "electron .",
+        "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "concurrently": "^5.0.0",
+        "electron": "^6.0.12",
+        "electron-builder": "^21.2.0",
+        "wait-on": "^3.3.0"
+    }
+}
