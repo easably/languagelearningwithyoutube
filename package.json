@@ -2,8 +2,8 @@
     "name": "languagelearningwithyoutube",
     "description": "Learn english with youtube",
     "author": "easably",
-    "main": "public/electron.js",
-    "homepage": "https://github.com/easably/languagelearningwithyoutube",
+    "main": "main.js",
+    "homepage": "./",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -14,9 +14,12 @@
         "cross-env": "^6.0.3",
         "electron-is-dev": "^1.1.0",
         "electron-reload": "^1.5.0",
+        "is-electron": "^2.2.0",
+        "node-sass": "^4.13.0",
         "react": "^16.10.2",
         "react-dom": "^16.10.2",
         "react-scripts": "3.2.0",
+        "subtitles-parser-vtt": "0.0.4",
         "typescript": "3.6.4",
         "youtube-dl": "^2.0.1"
     },
@@ -26,7 +29,8 @@
         "react-test": "react-scripts test --env=jsdom",
         "react-eject": "react-scripts eject",
         "electron-build": "electron-builder",
-        "release": "yarn react-build && electron-builder build --mac --publish=never",
+        "release:mac": "yarn react-build && electron-builder build --mac",
+        "release:windows": "yarn react-build && electron-builder build --win",
         "build": "yarn react-build && yarn electron-build",
         "electron": "electron .",
         "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""

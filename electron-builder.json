@@ -1,0 +1,31 @@
+{
+    "appId": "com.languagelearningwithyoutube.app",
+    "productName": "languagelearningwithyoutube",
+    "directories": {
+        "output": "release/"
+    },
+    "asar": true,
+    "asarUnpack": [],
+    "files": [
+        "build/**/*",
+        "main.js",
+        "electron/**/*",
+        "node_modules/**/*",
+        "package.json"
+    ],
+    "win": {
+        "icon": "build/favicon.png",
+        "target": ["portable"],
+        "extraFiles": ["mpv/win/"]
+    },
+    "mac": {
+        "icon": "build/favicon.png",
+        "target": ["dmg"],
+        "extraFiles": ["mpv/mac/"]
+    },
+    "linux": {
+        "icon": "dist",
+        "target": ["AppImage"]
+    },
+    "extends": null
+}

@@ -2,13 +2,17 @@ const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const BrowserView = electron.BrowserView;
+const ipcMain = electron.ipcMain;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const youtubedl = require("youtube-dl");
+const getSubtitlesFromUrl = require("./electron/getSubtitlesFromUrl");
+const videoInjection=require('./electron/videoInjection')
 
-require("electron-reload")(__dirname, {
-    electron: path.join(__dirname, "../", "node_modules", ".bin", "electron")
-});
+if (isDev) {
+    require("electron-reload")(__dirname, {
+        electron: path.join(__dirname, "./", "node_modules", ".bin", "electron")
+    });
+}
 
 let win;
 let youtubeView;
@@ -24,6 +28,8 @@ app.on("activate", () => {
         createWindow();
     }
 });
+
+addResendingEvents();
 
 function createWindow() {
     const point = electron.screen.getCursorScreenPoint();
@@ -56,34 +62,36 @@ function createWindow() {
 function createViews() {
     youtubeView = new BrowserView({
         webPreferences: {
-            devTools: isDev
+            devTools: isDev,
+            preload: __dirname + "/electron/preload.js"
         }
     });
     subtitlesView = new BrowserView({
         webPreferences: {
-            devTools: isDev
+            devTools: isDev,
+            preload: __dirname + "/electron/preload.js"
         }
     });
     win.addBrowserView(youtubeView);
     win.addBrowserView(subtitlesView);
-    youtubeView.webContents.loadURL("https://youtube.com");
+    youtubeView.webContents.loadURL("https://www.youtube.com");
     subtitlesView.webContents.loadURL(
         isDev
             ? "http://localhost:3000"
-            : `file://${path.join(__dirname, "../build/index.html")}`
+            : `file://${path.join(__dirname, "./build/index.html")}`
     );
-    const winSize = win.getSize();
+    const winSize = win.getContentBounds();
     youtubeView.setBounds({
         x: 0,
         y: 0,
-        width: winSize[0] / 2,
-        height: winSize[1]
+        width: (winSize.width * 2) / 4,
+        height: winSize.height
     });
     subtitlesView.setBounds({
-        x: winSize[0] / 2,
+        x: (winSize.width * 2) / 4,
         y: 0,
-        width: winSize[0] / 2,
-        height: winSize[1]
+        width: (winSize.width * 2) / 4,
+        height: winSize.height
     });
     const autoResizeSetting = {
         width: true,
@@ -98,25 +106,17 @@ function createViews() {
 }
 
 function addEventsToYoutube() {
-    youtubeView.webContents.executeJavaScript('console.log("Hello")');
+    let currentUrl = "";
     youtubeView.webContents.on("dom-ready", e => {
-        console.log("dom-ready");
-        // var url = "https://www.youtube.com/watch?v=GEQhDeNyM8s&t=68s";
-        // var options = {
-        //     auto: false,
-        //     all: true,
-        //     format: "vtt",
-        //     cwd: path.join(__dirname, "subtitles")
-        // };
-        // youtubedl.getSubs(url, options, function(err, files) {
-        //     if (err) throw err;
-
-        //     console.log("subtitle files downloaded:", files);
-        // });
+        const history = e.sender.history;
+        const url = history[history.length - 1];
+        didNavigate(url);
     });
     youtubeView.webContents.on("did-navigate-in-page", (e, url) => {
-        console.log("did-navigate-in-page");
-        console.log(e.sender.history, url);
+        if (url !== currentUrl) {
+            didNavigate(url);
+            currentUrl = url;
+        }
     });
     youtubeView.webContents.on("enter-html-full-screen", _ => {
         console.log("enter-html-full-screen");
@@ -124,4 +124,34 @@ function addEventsToYoutube() {
     youtubeView.webContents.on("leave-html-full-screen", _ => {
         console.log("leave-html-full-screen");
     });
+}
+
+function didNavigate(url) {
+    subtitlesView.webContents.send("changePage");
+    if (url.indexOf("?v=") !== -1) {
+        youtubeView.webContents.executeJavaScript('('+videoInjection.toString()+')()');
+        getSubtitlesFromUrl(url, ["ru", "en"]).then(s => {
+            subtitlesView.webContents.send("subtitles", {
+                list: s
+            });
+        }).catch(e=>{
+            subtitlesView.webContents.send("subtitles", {
+                error: e
+            });
+        });
+    } else {
+        subtitlesView.webContents.send("subtitles",{
+            no: true
+        });
+    }
+}
+
+function addResendingEvents(){
+    ipcMain.on('videoControlYoutube',(e,data)=>{
+        subtitlesView.webContents.send('videoControl',data)
+    })
+    
+    ipcMain.on('videoControl',(e,data)=>{
+        youtubeView.webContents.send('videoControlYoutube',data)
+    })
 }
