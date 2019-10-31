@@ -5,11 +5,13 @@ import videoEvents from '../../services/videoEvents'
 export default class SubtitleList extends React.Component{
     render(){
         const subtitles = this.props.subtitles;
+        console.log(subtitles)
         let content;
         if (subtitles) {
             content = this.props.subtitles.map(
                 (e,index) => {
-                    return <li key={index} onClick={_=>videoEvents.setTime(e.startTime)}>{e.text}</li>;
+
+                    return <li className={(this.props.videoTime >= e.startTime && this.props.videoTime<e.endTime) ? 'current' : ''} key={index} onClick={_=>videoEvents.setTime(e.startTime)}>{e.text}</li>;
                 }
             );
         } else {

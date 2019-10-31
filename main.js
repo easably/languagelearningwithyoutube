@@ -6,7 +6,7 @@ const ipcMain = electron.ipcMain;
 const path = require("path");
 const isDev = require("electron-is-dev");
 const getSubtitlesFromUrl = require("./electron/getSubtitlesFromUrl");
-const videoInjection=require('./electron/videoInjection')
+const videoInjection = require("./electron/videoInjection");
 
 if (isDev) {
     require("electron-reload")(__dirname, {
@@ -17,6 +17,7 @@ if (isDev) {
 let win;
 let youtubeView;
 let subtitlesView;
+let pageId;
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -102,7 +103,7 @@ function createViews() {
     youtubeView.setAutoResize(autoResizeSetting);
     subtitlesView.setAutoResize(autoResizeSetting);
     // youtubeView.webContents.openDevTools();
-    // subtitlesView.webContents.openDevTools();
+    subtitlesView.webContents.openDevTools();
 }
 
 function addEventsToYoutube() {
@@ -127,31 +128,42 @@ function addEventsToYoutube() {
 }
 
 function didNavigate(url) {
+    pageId = `f${(+new Date()).toString(16)}`;
+    let curPageId = pageId;
+
     subtitlesView.webContents.send("changePage");
     if (url.indexOf("?v=") !== -1) {
-        youtubeView.webContents.executeJavaScript('('+videoInjection.toString()+')()');
-        getSubtitlesFromUrl(url, ["ru", "en"]).then(s => {
-            subtitlesView.webContents.send("subtitles", {
-                list: s
+        youtubeView.webContents.executeJavaScript(
+            "(" + videoInjection.toString() + ")()"
+        );
+        getSubtitlesFromUrl(url, ["ru", "en"], youtubeView.webContents)
+            .then(s => {
+                if (curPageId === pageId) {
+                    subtitlesView.webContents.send("subtitles", {
+                        list: s
+                    });
+                }
+            })
+            .catch(e => {
+                if (curPageId === pageId) {
+                    subtitlesView.webContents.send("subtitles", {
+                        error: e
+                    });
+                }
             });
-        }).catch(e=>{
-            subtitlesView.webContents.send("subtitles", {
-                error: e
-            });
-        });
     } else {
-        subtitlesView.webContents.send("subtitles",{
+        subtitlesView.webContents.send("subtitles", {
             no: true
         });
     }
 }
 
-function addResendingEvents(){
-    ipcMain.on('videoControlYoutube',(e,data)=>{
-        subtitlesView.webContents.send('videoControl',data)
-    })
-    
-    ipcMain.on('videoControl',(e,data)=>{
-        youtubeView.webContents.send('videoControlYoutube',data)
-    })
+function addResendingEvents() {
+    ipcMain.on("videoControlYoutube", (e, data) => {
+        subtitlesView.webContents.send("videoControl", data);
+    });
+
+    ipcMain.on("videoControl", (e, data) => {
+        youtubeView.webContents.send("videoControlYoutube", data);
+    });
 }

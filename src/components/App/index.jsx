@@ -44,6 +44,9 @@ export default class App extends React.Component {
             });
             window.ipcRenderer.on("videoControl", (e, data) => {
                 console.log(data);
+                if (data.timeupdate){
+                    this.setState({videoTime:data.timeupdate})
+                }
             });
         }
     }
@@ -69,6 +72,7 @@ export default class App extends React.Component {
                         this.state.subtitles[this.state.currentLanguage]
                     }
                     text={this.state.text}
+                    videoTime={this.state.videoTime}
                 ></SubtitleList>
             </div>
         );

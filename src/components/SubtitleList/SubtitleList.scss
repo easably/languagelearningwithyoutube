@@ -9,5 +9,8 @@
     }
     li{
         cursor: pointer;
+        &.current{
+            background-color: red;
+        }
     }
 }
