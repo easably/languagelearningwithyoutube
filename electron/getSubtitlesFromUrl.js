@@ -6,11 +6,17 @@ const fs = require("fs");
 
 function getSubtitlesFromUrl(url, langauges = [], webContents) {
     return getVideoInfo(url, langauges, webContents).then(info =>
-        fetchSubtitlesFromRequestedSubtitles(info.requested_subtitles)
+        fetchSubtitlesFromRequestedSubtitles(
+            info.requested_subtitles,
+            Object.keys(info.subtitles).length === 0
+        )
     );
 }
 
-function fetchSubtitlesFromRequestedSubtitles(requestedSubtitles) {
+function fetchSubtitlesFromRequestedSubtitles(
+    requestedSubtitles,
+    automatic = false
+) {
     if (!requestedSubtitles) {
         return new Promise((resolve, reject) => {
             resolve(null);
@@ -23,7 +29,7 @@ function fetchSubtitlesFromRequestedSubtitles(requestedSubtitles) {
             axios
                 .get(requestedSubtitles[lang].url)
                 .then(resp => {
-                    const subs = parseSubtitle(resp.data);
+                    const subs = parseSubtitle(resp.data, automatic);
                     subtitle[lang] = subs;
                     resolve(subtitle);
                 })
@@ -45,8 +51,8 @@ function fetchSubtitlesFromRequestedSubtitles(requestedSubtitles) {
 function getVideoInfo(url, langauges, webContents) {
     return new Promise((resolve, reject) => {
         const args = [
-            // '-v',
             "-j",
+            // '--skip-download',
             "--write-sub",
             "--write-auto-sub",
             "--sub-lang",
@@ -61,59 +67,37 @@ function getVideoInfo(url, langauges, webContents) {
             customBinaryPath = path.join(__dirname, "bin", "youtube-dl");
         }
         youtubedl.setYtdlBinary(customBinaryPath);
-        youtubedl.exec(
-            url,
-            args,
-            {},
-            (err, output) => {
-                if (err) {
-                    reject(err);
-                    throw err;
-                }
-                resolve(JSON.parse(output[0]));
-            },
-            webContents
-        );
+        youtubedl.exec(url, args, {}, (err, output) => {
+            if (err) {
+                reject(err);
+                throw err;
+            }
+            resolve(JSON.parse(output[0]));
+        });
     });
 }
 function clearTagsFromText(text) {
     return text.replace(/<\/?[^<>]+>/gi, "");
 }
-function parseSubtitle(data) {
-    let isAutoCaption = false;
-    if (data.indexOf('<c>') !== -1){
-        isAutoCaption = true;
+function parseSubtitle(data, automatic) {
+    let isAutoCaption = undefined;
+    if (data.indexOf("<c>") !== -1 && automatic) {
+        isAutoCaption = "orig";
+    } else if (automatic) {
+        isAutoCaption = "translated";
     }
-    let subtitles = parser.fromSrt(data);
-    console.log(subtitles)
-    subtitles = subtitles.map(s => {
-        if (s.startTime.search(/\d\d:\d\d:\d\d/) !== -1) {
-            s.startTime = timeToMs(s.startTime);
-        }
-        if (s.endTime.search(/\d\d:\d\d:\d\d/) !== -1) {
-            s.endTime = timeToMs(s.endTime);
-        }
-        if (isAutoCaption){
-
-            if(s.text.indexOf('<c>') !== -1){
-                // s.text = clearTagsFromText(s.text)
-                return s;
-            }else{
-                return s
+    let subtitles = parser.fromSrt(data, true, isAutoCaption === 'orig');
+    if (isAutoCaption === "orig") {
+        subtitles.forEach(s => {
+            s.text = clearTagsFromText(s.text);
+        });
+    } else if (isAutoCaption === "translated") {
+        subtitles.forEach((s, i, arr) => {
+            if (arr[i + 1]) {
+                s.endTime = arr[i + 1].startTime;
             }
-        }else{
-            return s
-        }
-    }).filter(e=>e);
-    console.log(subtitles)
+        });
+    }
     return subtitles;
-}
-function timeToMs(t) {
-    let timeArr = t.split(":");
-    return (
-        Number(timeArr[0]) * 60 * 60 * 1000 +
-        Number(timeArr[1]) * 60 * 1000 +
-        Number(timeArr[2]) * 1000
-    );
 }
 module.exports = getSubtitlesFromUrl;

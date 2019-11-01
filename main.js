@@ -103,7 +103,7 @@ function createViews() {
     youtubeView.setAutoResize(autoResizeSetting);
     subtitlesView.setAutoResize(autoResizeSetting);
     // youtubeView.webContents.openDevTools();
-    subtitlesView.webContents.openDevTools();
+    // subtitlesView.webContents.openDevTools();
 }
 
 function addEventsToYoutube() {
