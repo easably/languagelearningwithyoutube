@@ -174,12 +174,15 @@ function didNavigate(url) {
     navigationView.webContents.send("toNavigation", {
         canGoBack: youtubeView.webContents.canGoBack()
     });
+    navigationView.webContents.send("toNavigation",{
+        changeURL: url
+    });
     subtitlesView.webContents.send("changePage");
     if (url.indexOf("?v=") !== -1) {
         youtubeView.webContents.executeJavaScript(
             "(" + videoInjection.toString() + ")()"
         );
-        getSubtitlesFromUrl(url, ["ru", "en"], youtubeView.webContents)
+        getSubtitlesFromUrl(url, ["ru", "en"])
             .then(s => {
                 if (curPageId === pageId) {
                     subtitlesView.webContents.send("subtitles", {

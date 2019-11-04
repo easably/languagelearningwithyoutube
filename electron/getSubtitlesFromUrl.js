@@ -4,8 +4,8 @@ const axios = require("axios");
 const path = require("path");
 const fs = require("fs");
 
-function getSubtitlesFromUrl(url, langauges = [], webContents) {
-    return getVideoInfo(url, langauges, webContents).then(info =>
+function getSubtitlesFromUrl(url, langauges = []) {
+    return getVideoInfo(url, langauges).then(info =>
         fetchSubtitlesFromRequestedSubtitles(
             info.requested_subtitles,
             Object.keys(info.subtitles).length === 0
@@ -48,7 +48,7 @@ function fetchSubtitlesFromRequestedSubtitles(
     });
 }
 
-function getVideoInfo(url, langauges, webContents) {
+function getVideoInfo(url, langauges) {
     return new Promise((resolve, reject) => {
         const args = [
             "-j",
