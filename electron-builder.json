@@ -8,19 +8,19 @@
     "asarUnpack": [],
     "files": [
         "build/**/*",
+        "favicons/**/*",
         "main.js",
         "electron/**/*",
         "node_modules/**/*",
-        "package.json",
-        "navigation/**/*"
+        "package.json"
     ],
     "win": {
-        "icon": "build/favicon.png",
+        "icon": "favicons/favicon.png",
         "target": ["portable"],
         "extraFiles": ["mpv/win/"]
     },
     "mac": {
-        "icon": "build/favicon.png",
+        "icon": "favicons/favicon.png",
         "target": ["dmg"],
         "extraFiles": ["mpv/mac/"]
     },

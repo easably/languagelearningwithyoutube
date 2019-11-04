@@ -4,6 +4,8 @@
 process.env.BABEL_ENV = 'development';
 process.env.NODE_ENV = 'development';
 
+const isApp = process.env.REACT_APP_ENTRY === 'app';
+
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
@@ -41,7 +43,7 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 }
 
 // Tools like Cloud9 rely on this.
-const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
+const DEFAULT_PORT = parseInt(process.env.PORT, 10) || (isApp ? 3000 : 3001);
 const HOST = process.env.HOST || '0.0.0.0';
 
 if (process.env.HOST) {
