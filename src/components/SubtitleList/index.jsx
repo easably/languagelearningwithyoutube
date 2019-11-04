@@ -5,7 +5,6 @@ import videoEvents from '../../services/videoEvents'
 export default class SubtitleList extends React.Component{
     render(){
         const subtitles = this.props.subtitles;
-        console.log(subtitles)
         let content;
         if (subtitles) {
             content = this.props.subtitles.map(

@@ -23,7 +23,6 @@ export default class App extends React.Component {
                 });
             });
             window.ipcRenderer.on("subtitles", (e, subtitles) => {
-                console.log(subtitles);
                 let newSubtitles;
                 let newText;
                 if (subtitles.list && Object.keys(subtitles.list).length > 0) {
@@ -43,7 +42,6 @@ export default class App extends React.Component {
                 });
             });
             window.ipcRenderer.on("videoControl", (e, data) => {
-                console.log(data);
                 if (data.timeupdate){
                     this.setState({videoTime:data.timeupdate})
                 }

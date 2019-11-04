@@ -4,7 +4,7 @@
     "author": "easably",
     "main": "main.js",
     "homepage": ".",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "private": true,
     "dependencies": {
         "@types/jest": "24.0.19",

@@ -16,8 +16,10 @@ if (isDev) {
 
 let win;
 let youtubeView;
+let navigationView;
 let subtitlesView;
 let pageId;
+let navHeight = 40;
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -56,12 +58,19 @@ function createWindow() {
 
     createViews();
     addEventsToYoutube();
+    addNavigationEvents();
 
     win.on("closed", () => (win = null));
 }
 
 function createViews() {
     youtubeView = new BrowserView({
+        webPreferences: {
+            devTools: isDev,
+            preload: __dirname + "/electron/preload.js"
+        }
+    });
+    navigationView = new BrowserView({
         webPreferences: {
             devTools: isDev,
             preload: __dirname + "/electron/preload.js"
@@ -74,8 +83,12 @@ function createViews() {
         }
     });
     win.addBrowserView(youtubeView);
+    win.addBrowserView(navigationView);
     win.addBrowserView(subtitlesView);
     youtubeView.webContents.loadURL("https://www.youtube.com");
+    navigationView.webContents.loadURL(
+        `file://${path.join(__dirname, "./navigation/index.html")}`
+    );
     subtitlesView.webContents.loadURL(
         isDev
             ? "http://localhost:3000"
@@ -84,9 +97,15 @@ function createViews() {
     const winSize = win.getContentBounds();
     youtubeView.setBounds({
         x: 0,
+        y: navHeight,
+        width: (winSize.width * 2) / 4,
+        height: winSize.height - navHeight
+    });
+    navigationView.setBounds({
+        x: 0,
         y: 0,
         width: (winSize.width * 2) / 4,
-        height: winSize.height
+        height: navHeight
     });
     subtitlesView.setBounds({
         x: (winSize.width * 2) / 4,
@@ -100,9 +119,11 @@ function createViews() {
         horizontal: true,
         vertical: true
     };
-    youtubeView.setAutoResize(autoResizeSetting);
+    youtubeView.setAutoResize({...autoResizeSetting,  vertical:false });
+    navigationView.setAutoResize({...autoResizeSetting, vertical: false, height:false });
     subtitlesView.setAutoResize(autoResizeSetting);
     // youtubeView.webContents.openDevTools();
+    // navigationView.webContents.openDevTools();
     // subtitlesView.webContents.openDevTools();
 }
 
@@ -119,6 +140,12 @@ function addEventsToYoutube() {
             currentUrl = url;
         }
     });
+    youtubeView.webContents.on("did-start-loading", ()=>{
+        navigationView.webContents.send('toNavigation',{didStartLoading:true})
+    })
+    youtubeView.webContents.on("did-stop-loading", ()=>{
+        navigationView.webContents.send('toNavigation',{didStopLoading:true})
+    })
     youtubeView.webContents.on("enter-html-full-screen", _ => {
         console.log("enter-html-full-screen");
     });
@@ -131,6 +158,8 @@ function didNavigate(url) {
     pageId = `f${(+new Date()).toString(16)}`;
     let curPageId = pageId;
 
+    navigationView.webContents.send('toNavigation',{canGoForward: youtubeView.webContents.canGoForward()})
+    navigationView.webContents.send('toNavigation',{canGoBack: youtubeView.webContents.canGoBack()})
     subtitlesView.webContents.send("changePage");
     if (url.indexOf("?v=") !== -1) {
         youtubeView.webContents.executeJavaScript(
@@ -166,4 +195,20 @@ function addResendingEvents() {
     ipcMain.on("videoControl", (e, data) => {
         youtubeView.webContents.send("videoControlYoutube", data);
     });
+}
+
+function addNavigationEvents(){
+    ipcMain.on('navigation',(e,data)=>{
+        if (data.goBack){
+            youtubeView.webContents.goBack()
+        }else if (data.goForward){
+            youtubeView.webContents.goForward()
+        }else if (data.reload){
+            youtubeView.webContents.reload()
+        }else if (data.stopLoad){
+            youtubeView.webContents.stop()
+        }else if (data.setURL){
+            youtubeView.webContents.loadURL(data.setURL)
+        }
+    })
 }

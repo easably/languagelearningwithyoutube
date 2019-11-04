@@ -11,7 +11,8 @@
         "main.js",
         "electron/**/*",
         "node_modules/**/*",
-        "package.json"
+        "package.json",
+        "navigation/**/*"
     ],
     "win": {
         "icon": "build/favicon.png",
