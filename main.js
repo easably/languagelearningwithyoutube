@@ -157,10 +157,10 @@ function addEventsToYoutube() {
         });
     });
     youtubeView.webContents.on("enter-html-full-screen", _ => {
-        console.log("enter-html-full-screen");
+        hideNavigation(true);
     });
     youtubeView.webContents.on("leave-html-full-screen", _ => {
-        console.log("leave-html-full-screen");
+        hideNavigation(false);
     });
 }
 
@@ -174,7 +174,7 @@ function didNavigate(url) {
     navigationView.webContents.send("toNavigation", {
         canGoBack: youtubeView.webContents.canGoBack()
     });
-    navigationView.webContents.send("toNavigation",{
+    navigationView.webContents.send("toNavigation", {
         changeURL: url
     });
     subtitlesView.webContents.send("changePage");
@@ -187,7 +187,7 @@ function didNavigate(url) {
                 if (curPageId === pageId) {
                     subtitlesView.webContents.send("subtitles", {
                         list: s
-                    }); 
+                    });
                 }
             })
             .catch(e => {
@@ -228,4 +228,34 @@ function addNavigationEvents() {
             youtubeView.webContents.loadURL(data.setURL);
         }
     });
+}
+function hideNavigation(hide = true) {
+    const winSize = win.getContentBounds();
+    if (hide) {
+        navigationView.setBounds({
+            x: 0,
+            y: 0,
+            width: (winSize.width * 2) / 4,
+            height: 0
+        });
+        youtubeView.setBounds({
+            x: 0,
+            y: 0,
+            width: (winSize.width * 2) / 4,
+            height: winSize.height
+        });
+    } else {
+        navigationView.setBounds({
+            x: 0,
+            y: 0,
+            width: (winSize.width * 2) / 4,
+            height: navHeight
+        });
+        youtubeView.setBounds({
+            x: 0,
+            y: navHeight,
+            width: (winSize.width * 2) / 4,
+            height: winSize.height - navHeight
+        });
+    }
 }
