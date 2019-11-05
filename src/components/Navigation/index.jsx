@@ -4,7 +4,9 @@ import leftArrowIco from "../../assets/icons/left-arrow.svg";
 import rightArrowIco from "../../assets/icons/right-arrow.svg";
 import reloadIco from "../../assets/icons/reload.svg";
 import stopIco from "../../assets/icons/stop.svg";
+import copyIco from "../../assets/icons/copy.svg";
 import navEvents from "../../services/navEvents";
+import ReactTooltip from "react-tooltip";
 
 export default class Navigation extends React.Component {
     constructor(props) {
@@ -13,9 +15,11 @@ export default class Navigation extends React.Component {
             reload: false,
             backBtnActive: false,
             forwardBtnActive: false,
-            url: "",
-            inputUrl: ""
+            url: "https://youtube.com",
+            inputUrl: "",
         };
+        this.copyTipText =  'Copy';
+        this.copyTooltipRef = React.createRef();
     }
     componentDidMount() {
         navEvents.on("didStartLoading", () => {
@@ -62,7 +66,48 @@ export default class Navigation extends React.Component {
             e.target.blur();
         }
     };
+    copyStringToClipboard(str) {
+        var el = document.createElement("textarea");
+        el.value = str;
+        el.setAttribute("readonly", "");
+        el.style = { position: "absolute", left: "-9999px" };
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+    }
+    copyUrl = () => {
+        this.copyStringToClipboard(this.state.url);
+        this.copyTipText = "Copied";
+        ReactTooltip.hide(this.copyTooltipRef.current);
+        ReactTooltip.show(this.copyTooltipRef.current);
+    };
     render() {
+        let copyBtn = undefined;
+        if (this.state.url.length >= 0) {
+            copyBtn = (
+                <div
+                    className="copy-btn"
+                    data-tip=''
+                    data-for="copy-tip"
+                    ref={this.copyTooltipRef}
+                    onClick={this.copyUrl}
+                    >
+                    <img src={copyIco} alt="copy" height="100%" />
+                    <ReactTooltip
+                        id="copy-tip"
+                        place="left"
+                        type="light"
+                        effect="solid"
+                        className="tooltip"
+                        afterShow={_ => (this.copyTipText = "Copy")}
+                        getContent={()=>{
+                            return this.copyTipText
+                        }}
+                    />
+                </div>
+            );
+        }
         return (
             <div className="Navigation">
                 <div
@@ -131,6 +176,7 @@ export default class Navigation extends React.Component {
                             this.handleEnter(e);
                         }}
                     />
+                    {copyBtn}
                 </div>
             </div>
         );
