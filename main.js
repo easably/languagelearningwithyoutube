@@ -187,7 +187,7 @@ function didNavigate(url) {
                 if (curPageId === pageId) {
                     subtitlesView.webContents.send("subtitles", {
                         list: s
-                    });
+                    }); 
                 }
             })
             .catch(e => {

@@ -69,8 +69,7 @@ function getVideoInfo(url, langauges) {
         youtubedl.setYtdlBinary(customBinaryPath);
         youtubedl.exec(url, args, {}, (err, output) => {
             if (err) {
-                reject(err);
-                throw err;
+                return reject(err);
             }
             resolve(JSON.parse(output[0]));
         });
