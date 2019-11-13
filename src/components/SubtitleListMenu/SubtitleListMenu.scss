@@ -1,0 +1,33 @@
+.SubtitleListMenu{
+    background-color: var(--background);
+    border-bottom: 1px solid var(--separator);
+    display: flex;
+    justify-content: space-between;
+    padding: 6px;
+    .select-lang{
+        // max-width: 100px;
+        text-align: center;
+        // flex: 1 1 auto;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--text);
+    }
+    .search{
+        position: relative;
+        &-icon{
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            bottom: 5px;
+        }
+        input{
+            padding: 10px 10px 10px 30px;
+            font-size: 13px;
+            border-radius: 5px;
+            border: 0px;
+            background-color: var(--background2);
+            outline: none;
+            color: var(--text);
+        }
+    }
+}

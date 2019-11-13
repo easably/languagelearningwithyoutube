@@ -1,16 +1,6 @@
 .SubtitleList{
     height: 100%;
     width: 100%;
-    margin-top: 10px;
-    .content{
-        height: 100%;
-        width: 100%;
-        text-align: center;
-    }
-    li{
-        cursor: pointer;
-        &.current{
-            background-color: red;
-        }
-    }
+    background-color: var(--background);
+    overflow-y: auto;
 }

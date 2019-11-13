@@ -1,21 +1,49 @@
 import React from "react";
 import "./App.scss";
+import "../../styles/theme.scss";
 import isElectron from "is-electron";
 import SubtitleList from "../SubtitleList";
+import SubtitleListMenu from "../SubtitleListMenu";
+import Loader from "react-loader-spinner";
+
 export default class App extends React.Component {
     constructor(props) {
         super(props);
+        this.loadMessages = ["No subtitles", "Loading error :(", ""];
         this.state = {
+            theme: undefined,
             loading: false,
             subtitles: undefined,
-            currentLanguage: "en",
-            text: ""
+            currentLanguage: undefined,
+            loadMessage: this.loadMessages[2]
         };
     }
-    getLanguages() {
-        return Object.keys(this.state.subtitles);
+    changeTheme(nextTheme) {
+        if (!nextTheme) {
+            const oldTheme = this.state.theme;
+            if (oldTheme === "light") {
+                nextTheme = "dark";
+            } else{
+                nextTheme = "light";
+            }
+        }
+        this.setState({ theme: nextTheme });
+        this.changeBodyClassTheme(nextTheme);
     }
+    changeBodyClassTheme(newTheme){
+        document.body.className = newTheme === 'dark' ? 'dark-theme' : '';
+    }
+    getLanguages(subtitles = this.state.subtitles) {
+        if (!subtitles) return [];
+        return Object.keys(subtitles);
+    }
+    changeLang = lang => {
+        this.setState({
+            currentLanguage: lang
+        });
+    };
     componentDidMount() {
+        // this.changeTheme('dark')
         if (isElectron()) {
             window.ipcRenderer.on("changePage", _ => {
                 this.setState({
@@ -30,48 +58,55 @@ export default class App extends React.Component {
                     newText = "";
                 } else {
                     newSubtitles = undefined;
-                    newText = "No subtitles";
+                    newText = this.loadMessages[0];
                 }
                 if (subtitles.error) {
-                    newText = "Loading error :(";
+                    newText = this.loadMessages[1];
                 }
                 this.setState({
                     loading: false,
                     subtitles: newSubtitles,
-                    text: newText
+                    currentLanguage: this.getLanguages(newSubtitles)[0],
+                    loadMessage: newText
                 });
             });
             window.ipcRenderer.on("videoControl", (e, data) => {
-                if (data.timeupdate){
-                    this.setState({videoTime:data.timeupdate})
+                if (data.timeupdate) {
+                    this.setState({ videoTime: data.timeupdate });
                 }
             });
         }
     }
     render() {
-        const langButtons =
-            this.state.subtitles &&
-            this.getLanguages().map(l => (
-                <button
-                    key={l}
-                    style={{ width: "100%" }}
-                    onClick={_ => this.setState({ currentLanguage: l })}
-                >
-                    {l}
-                </button>
-            ));
-        return (
-            <div className="App">
-                {langButtons}
+        let subtitleListMenu, subtitleList;
+        if (this.state.subtitles && this.state.currentLanguage) {
+            subtitleListMenu = (
+                <SubtitleListMenu
+                    languages={this.getLanguages()}
+                    currentLanguage={this.state.currentLanguage}
+                    changeLang={this.changeLang}
+                />
+            );
+            subtitleList = (
                 <SubtitleList
-                    loading={this.state.loading}
-                    subtitles={
-                        this.state.subtitles &&
-                        this.state.subtitles[this.state.currentLanguage]
-                    }
-                    text={this.state.text}
+                    subtitles={this.state.subtitles[this.state.currentLanguage]}
                     videoTime={this.state.videoTime}
                 ></SubtitleList>
+            );
+        } else {
+            subtitleList = (
+                <div className="load-message">{this.state.loadMessage}</div>
+            );
+        }
+        const spinner = (
+            <Loader type="TailSpin" color="var(--main)" height={80} width={80} />
+        );
+        return (
+            <div className="App">
+                {subtitleListMenu}
+                <div className="content">
+                    {this.state.loading ? spinner : subtitleList}
+                </div>
             </div>
         );
     }
