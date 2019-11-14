@@ -5,8 +5,8 @@
     padding: 15px;
     background-color: var(--background);
     border: 2px solid var(--background);
+    border-radius: 15px;
     &.current {
-        border-radius: 15px;
         border: 2px solid var(--main);
     }
     .flex-start {
@@ -63,9 +63,9 @@
     }
     transition: all .2s ease-in-out;
     cursor: default;
-    transform: translateX(0px);
-    &:hover {
-        transform: translateX(5px);
+
+    &:not(.current):hover {
+        border:2px solid var(--separator);
 
     }
 }

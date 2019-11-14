@@ -6,13 +6,22 @@ import ReactSVG from "react-svg";
 import favoriteIcon from "../../assets/icons/favorite.svg";
 import otherIcon from "../../assets/icons/other.svg";
 export default class SubtitleListItem extends React.Component {
+    componentDidMount(){
+        this.props.measure()
+        this.updateMeasure = ()=>{
+            this.props.measure()
+        }
+        window.addEventListener('resize',this.updateMeasure)
+    }
+    componentWillUnmount(){
+        window.removeEventListener('resize',this.updateMeasure)
+    }
     render() {
         const itemClass = classNames("SubtitleListItem", {
             current: this.props.isCurrent
         });
-
         return (
-            <div className={itemClass} onClick={this.props.handleClick}>
+            <div style={this.props.style} className={itemClass} onClick={this.props.handleClick}>
                 <div className="flex-start">
                     <div className="time">
                         {TimeFormat.fromMs(
