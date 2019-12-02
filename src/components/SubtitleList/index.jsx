@@ -19,7 +19,10 @@ export default class SubtitleList extends React.Component {
     });
     this.listRef = React.createRef();
   }
-  rowRenderer = ({ index, isScrolling, key, parent, style }) => {
+  clickOnItem = (e) => {
+    videoEvents.setTime(e.startTime)
+  }
+  rowRenderer = ({ index, key, parent, style }) => {
     let e = this.props.subtitles[index];
     return (
       <CellMeasurer
@@ -38,9 +41,7 @@ export default class SubtitleList extends React.Component {
               this.props.videoTime < e.endTime
             }
             text={e.text}
-            handleClick={_ => {
-              videoEvents.setTime(e.startTime);
-            }}
+            handleClick={_=>this.clickOnItem(e)}
             startTime={e.startTime}
             key={key}
           />

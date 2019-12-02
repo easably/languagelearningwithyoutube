@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import "./Select.scss";
+import ModalBackdor from '../ModalBackdrop';
 
 export default class Select extends React.Component {
     constructor(props) {
@@ -19,20 +20,6 @@ export default class Select extends React.Component {
     change = (param) => {
         this.props.onChange(param);
         this.toggleSelect();
-    }
-    componentDidMount(){
-        this.listener =  e=>{
-            if (!e.path.some(e=>e===this.ref.current) && this.state.open){
-                this.setState({
-                    open: false
-                })
-            }
-        }
-        document.addEventListener('click',this.listener)
-    }
-    componentWillUnmount(){
-        document.removeEventListener('click',this.listener)
-
     }
     render() {
         if (!this.props.items) return;
@@ -60,6 +47,7 @@ export default class Select extends React.Component {
                         {this.props.value}
                     </div>
                     <ul className={classesList}>{list}</ul>
+										{this.state.open && <ModalBackdor onClose={this.toggleSelect}/>}
                 </div>
             </div>
         );

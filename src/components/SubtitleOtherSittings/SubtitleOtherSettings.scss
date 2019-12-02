@@ -1,0 +1,43 @@
+$borderRadius: 5px;
+.SubtitleOtherSettings {
+	position: absolute;
+	z-index: 51;
+  bottom: 100%;
+  right: 0;
+  border-radius: $borderRadius;
+  border: 1px solid var(--separator);
+  width: max-content;
+	display: flex;
+	background-color:var(--background);
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+	.btn{
+		&:first-child{
+			border-radius: $borderRadius 0 0 $borderRadius;
+		}
+		&:last-child{
+			border-radius: 0 $borderRadius $borderRadius 0;
+		}
+		box-sizing: initial;
+		flex: auto;
+		height: 19px;
+		padding: 5px 10px;
+		background-color: var(--background);
+		transition: all .2s ease-in-out;
+		svg{
+			transition: all .2s ease-in-out;
+			fill: var(--separator);
+			transform: scale(1);
+		}
+		&:hover{
+			svg{
+				transform: scale(1.2);
+			}
+		}
+		&.active{
+			background-color: var(--main);
+			svg{
+				fill: var(--background)
+			}
+		}
+	}
+}

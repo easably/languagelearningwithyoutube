@@ -26,11 +26,11 @@ $triangleSize: 4px;
         }
     }
     &-list {
-        position: absolute;
+				position: absolute;
+				z-index: 51;
         top: 0;
         left: 0;
         width: 100px;
-        z-index: 2;
         background-color: var(--background);
         border-radius: $borderRadius;
         opacity: 0;
