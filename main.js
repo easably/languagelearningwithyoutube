@@ -205,12 +205,12 @@ function didNavigate(url) {
 }
 
 function addResendingEvents() {
-    ipcMain.on("videoControlYoutube", (e, data) => {
-        subtitlesView.webContents.send("videoControl", data);
+    ipcMain.on("videoEventsYoutube", (e, data) => {
+        subtitlesView.webContents.send("videoEvents", data);
     });
 
-    ipcMain.on("videoControl", (e, data) => {
-        youtubeView.webContents.send("videoControlYoutube", data);
+    ipcMain.on("videoAction", (e, data) => {
+        youtubeView.webContents.send("videoActionYoutube", data);
     });
 }
 

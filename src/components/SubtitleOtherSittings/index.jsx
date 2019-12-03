@@ -1,40 +1,33 @@
 import React from "react";
 import ReactSVG from "react-svg";
-import classNames from 'classnames'
+import classNames from "classnames";
 import "./SubtitleOtherSettings.scss";
 import otherPlayIcon from "../../assets/icons/other_play.svg";
 import otherReloadIcon from "../../assets/icons/other_reload.svg";
 import otherSpeedIcon from "../../assets/icons/other_speed.svg";
 
-export default function SubtitleOtherSettings() {
-	const [activeBtn, setActiveBtn] = React.useState(undefined);
+export default function SubtitleOtherSettings(props) {
+  const onClkBtn = (e,btnName) => {
+		e.stopPropagation();
+    props.handleChangeFunc(btnName);
+  };
 
-  const onClkBtn = btnName => {
-		setActiveBtn(btnName)
-	}
-
-	const getClasses = btnName =>{
-		return classNames('svg','btn',{
-			active: btnName === activeBtn
-		})
-	}
+  const getClasses = btnName => {
+    return classNames("btn", {
+      active: btnName === props.activeFunc
+    });
+  };
   return (
     <div className="SubtitleOtherSettings">
-      <ReactSVG
-        src={otherPlayIcon}
-        className={getClasses('play')}
-        onClick={_ => onClkBtn("play")}
-      />
-      <ReactSVG
-        src={otherReloadIcon}
-        className={getClasses('reload')}
-        onClick={_ => onClkBtn("reload")}
-      />
-      <ReactSVG
-        src={otherSpeedIcon}
-        className={getClasses('speed')}
-        onClick={_ => onClkBtn("speed")}
-      />
+      <div className={getClasses("play")} onClick={e => onClkBtn(e,"play")}>
+        <ReactSVG src={otherPlayIcon} className="svg" />
+      </div>
+      <div className={getClasses("reload")} onClick={e => onClkBtn(e,"reload")}>
+        <ReactSVG src={otherReloadIcon} className="svg" />
+      </div>
+      <div className={getClasses("speed")} onClick={e => onClkBtn(e,"speed")}>
+        <ReactSVG src={otherSpeedIcon} className="svg" />
+      </div>
     </div>
   );
 }

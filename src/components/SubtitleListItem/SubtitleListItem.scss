@@ -5,7 +5,14 @@
   padding: 15px;
   background-color: var(--background);
   border: 2px solid var(--background);
-  border-radius: 15px;
+	border-radius: 15px;
+  &.checked {
+    background-color: var(--separator);
+    .favorite,
+    .other {
+      fill: var(--background);
+		}
+  }
   &.current {
     border: 2px solid var(--main);
   }
@@ -34,6 +41,17 @@
     border: 1px solid var(--separator);
     background-color: var(--background);
     margin-right: 18px;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    svg {
+      stroke: var(--background);
+      width: 80%;
+      margin-left: 10%;
+    }
+    &.checked {
+      border: 1px solid transparent;
+      background-color: var(--main);
+    }
   }
   .text {
     color: var(--text);
@@ -50,11 +68,11 @@
   .favorite,
   .other {
     fill: var(--separator);
-		height: 19px;
-		transition: all .2s ease-in-out;
-		&.active{
-			fill: var(--main);
-		}
+    height: 19px;
+    transition: all 0.2s ease-in-out;
+    &.active {
+      fill: var(--main);
+    }
   }
   .favorite,
   .other-menu-wrapper {

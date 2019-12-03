@@ -6,7 +6,7 @@ function videoInjection() {
         attributes: true,
         attributeFilter: ['class']
     }
-    const messageChannel = "videoControlYoutube";
+    const messageChannel = "videoActionYoutube";
     if (window.injectedListeners) {
         const { video, messaging, observer } = window.injectedListeners;
         video.dom.removeEventListener("timeupdate", video.listener);
@@ -49,7 +49,7 @@ function videoInjection() {
         };
     }
     function timeupdating(e) {
-        window.ipcRenderer.send("videoControlYoutube", {
+        window.ipcRenderer.send("videoEventsYoutube", {
             timeupdate: e.target.currentTime * 1000
         });
     }

@@ -3,7 +3,10 @@
     border-bottom: 1px solid var(--separator);
     display: flex;
     justify-content: space-between;
-    padding: 6px;
+		padding: 6px;
+		.SubtitleListMenu_part{
+			display: flex;
+		}
     .select-lang{
         // max-width: 100px;
         text-align: center;
@@ -18,7 +21,9 @@
             position: absolute;
             top: 5px;
             left: 10px;
-            bottom: 5px;
+						bottom: 5px;
+						height: auto;
+						width: auto;
         }
         input{
             padding: 10px 10px 10px 30px;
@@ -29,5 +34,16 @@
             outline: none;
             color: var(--text);
         }
-    }
+		}
+		.favorite-filter{
+			margin-right: 10px;
+			fill: var(--separator);
+			transition: all .2s ease-in-out;
+			&:hover{
+				transform: scale(1.2);
+			}
+			&.active{
+				fill: var(--main)
+			}
+		}
 }
