@@ -1,55 +1,45 @@
 import React from "react";
 import classNames from "classnames";
 import "./Select.scss";
-import ModalBackdor from '../ModalBackdrop';
+import ModalBackdor from "../ModalBackdrop";
+import { useLocalStore, observer } from "mobx-react-lite";
 
-export default class Select extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false
-        };
-				this.ref = React.createRef()
+export default observer(props => {
+  const state = useLocalStore(() => ({
+    open: false,
+    toggleOpen: function() {
+      this.open = !this.open;
     }
+  }));
 
-    toggleSelect = () => {
-        this.setState(state => {
-            return { open: !state.open };
-        });
-    };
-    change = (param) => {
-        this.props.onChange(param);
-        this.toggleSelect();
-    }
-    render() {
-        if (!this.props.items) return null;
-        const list = this.props.items.map((l, i) => {
-            const classesItem = classNames("select-list-item",{
-                active: l === this.props.value
-            })
-            return (
-                <li
-                    className={classesItem}
-                    onClick={e=>this.change(l)}
-                    key={i}
-                >
-                    {l}
-                </li>
-            );
-        });
-        const classesList = classNames("select-list", {
-            open: this.state.open
-        });
-        return (
-            <div className="select" ref = {this.ref}>
-                <div className="select__main">
-                    <div className="select-current" onClick={this.toggleSelect}>
-                        {this.props.value}
-                    </div>
-                    <ul className={classesList}>{list}</ul>
-										{this.state.open && <ModalBackdor onClose={this.toggleSelect}/>}
-                </div>
-            </div>
-        );
-    }
-}
+  let change = param => {
+    props.onChange(param);
+    state.toggleOpen();
+  };
+
+  if (!props.items) return null;
+  const list = props.items.map((l, i) => {
+    const classesItem = classNames("select-list-item", {
+      active: l === props.value
+    });
+    return (
+      <li className={classesItem} onClick={e => change(l)} key={i}>
+        {l}
+      </li>
+    );
+  });
+  const classesList = classNames("select-list", {
+    open: state.open
+  });
+  return (
+    <div className="select">
+      <div className="select__main">
+        <div className="select-current" onClick={state.toggleOpen}>
+          {props.value}
+        </div>
+        <ul className={classesList}>{list}</ul>
+        {state.open && <ModalBackdor onClose={state.toggleOpen} />}
+      </div>
+    </div>
+  );
+});
