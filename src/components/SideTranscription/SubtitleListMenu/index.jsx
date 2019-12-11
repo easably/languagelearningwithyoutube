@@ -1,12 +1,12 @@
 import React from "react";
 import "./SubtitleListMenu.scss";
-import searchIcon from "../../assets/icons/search.svg";
+import searchIcon from "../../../assets/icons/search.svg";
 import ReactSVG from "react-svg";
-import Select from "../Select";
-import filterIcon from "../../assets/icons/favorite.svg";
+import Select from "../../Select";
+import filterIcon from "../../../assets/icons/favorite.svg";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import store from "../../store";
+import store from "../../../store";
 
 export default observer(props => {
   const classes = {

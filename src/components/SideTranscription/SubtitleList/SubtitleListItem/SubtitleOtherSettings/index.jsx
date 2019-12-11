@@ -2,9 +2,9 @@ import React from "react";
 import ReactSVG from "react-svg";
 import classNames from "classnames";
 import "./SubtitleOtherSettings.scss";
-import otherPlayIcon from "../../assets/icons/other_play.svg";
-import otherReloadIcon from "../../assets/icons/other_reload.svg";
-import otherSpeedIcon from "../../assets/icons/other_speed.svg";
+import otherPlayIcon from "../../../../../assets/icons/other_play.svg";
+import otherReloadIcon from "../../../../../assets/icons/other_reload.svg";
+import otherSpeedIcon from "../../../../../assets/icons/other_speed.svg";
 
 export default function SubtitleOtherSettings(props) {
   const onClkBtn = (e,btnName) => {

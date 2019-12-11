@@ -1,6 +1,6 @@
 import React from "react";
 import "./SubtitleList.scss";
-import SubtitleListItem from "../SubtitleListItem";
+import SubtitleListItem from "./SubtitleListItem";
 import {
   List,
   AutoSizer,
@@ -8,7 +8,7 @@ import {
   CellMeasurerCache
 } from "react-virtualized";
 import { observer } from "mobx-react-lite";
-import store from "../../store";
+import store from "../../../store";
 
 export default observer(() => {
   let cache = new CellMeasurerCache({

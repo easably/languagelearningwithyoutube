@@ -1,8 +1,8 @@
 import React, { useEffect, Fragment } from "react";
 import "./SideTranscription.scss";
 import "../../styles/theme.scss";
-import SubtitleList from "../SubtitleList";
-import SubtitleListMenu from "../SubtitleListMenu";
+import SubtitleList from "./SubtitleList";
+import SubtitleListMenu from "./SubtitleListMenu";
 import Loader from "react-loader-spinner";
 import { useLocalStore, observer } from "mobx-react-lite";
 import store from "../../store";

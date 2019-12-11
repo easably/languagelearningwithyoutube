@@ -3,13 +3,13 @@ import classNames from "classnames";
 import "./SubtitleListItem.scss";
 import TimeFormat from "hh-mm-ss";
 import ReactSVG from "react-svg";
-import favoriteIcon from "../../assets/icons/favorite.svg";
-import otherIcon from "../../assets/icons/other.svg";
-import SubtitleOtherSettings from "../SubtitleOtherSittings";
-import ModalBackdrop from "../ModalBackdrop";
-import checkedIcon from "../../assets/icons/checked.svg";
-import videoAction from "../../services/videoAction";
-import store from "../../store";
+import favoriteIcon from "../../../../assets/icons/favorite.svg";
+import otherIcon from "../../../../assets/icons/other.svg";
+import SubtitleOtherSettings from "./SubtitleOtherSettings";
+import ModalBackdrop from "../../../ModalBackdrop";
+import checkedIcon from "../../../../assets/icons/checked.svg";
+import videoAction from "../../../../services/videoAction";
+import store from "../../../../store";
 import { useLocalStore, observer } from "mobx-react-lite";
 
 export default observer(props => {
