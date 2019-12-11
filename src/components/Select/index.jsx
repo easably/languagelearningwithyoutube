@@ -9,7 +9,7 @@ export default class Select extends React.Component {
         this.state = {
             open: false
         };
-        this.ref = React.createRef()
+				this.ref = React.createRef()
     }
 
     toggleSelect = () => {
@@ -22,7 +22,7 @@ export default class Select extends React.Component {
         this.toggleSelect();
     }
     render() {
-        if (!this.props.items) return;
+        if (!this.props.items) return null;
         const list = this.props.items.map((l, i) => {
             const classesItem = classNames("select-list-item",{
                 active: l === this.props.value

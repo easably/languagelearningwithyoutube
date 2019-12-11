@@ -4,69 +4,27 @@ import "../../styles/theme.scss";
 import SubtitleList from "../SubtitleList";
 import SubtitleListMenu from "../SubtitleListMenu";
 import Loader from "react-loader-spinner";
-import testSubtitles from "../../assets/testSubtitles.json";
+import { observer, Provider } from "mobx-react";
+import store from "../../store";
+import { observable } from "mobx";
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.loadMessages = [
-      "No subtitles",
-      "Loading error :(",
-      "Reload YouTube please"
-    ];
-    this.state = {
-      theme: undefined,
-      loading: false,
-      subtitles: testSubtitles,
-      currentLanguage: "en",
-      loadMessage: "",
-      favoriteFilter: false,
-      searchText: ""
-    };
-  }
-  changeTheme(nextTheme) {
-    if (!nextTheme) {
-      const oldTheme = this.state.theme;
-      if (oldTheme === "light") {
-        nextTheme = "dark";
-      } else {
-        nextTheme = "light";
-      }
-    }
-    this.setState({ theme: nextTheme });
-    this.changeBodyClassTheme(nextTheme);
-  }
-  changeBodyClassTheme(newTheme) {
-    document.body.className = newTheme === "dark" ? "dark-theme" : "";
-  }
-  getLanguages(subtitles = this.state.subtitles) {
-    if (!subtitles) return [];
-    return Object.keys(subtitles);
-  }
-  changeLang = lang => {
-    this.setState({
-      currentLanguage: lang
-    });
-  };
-  changeFavoriteFilter = _ => {
-    this.setState(prevState => ({
-      favoriteFilter: !prevState.favoriteFilter
-    }));
-  };
-  changeSearchText = newText => {
-    this.setState({
-      searchText: newText
-    });
-  };
+@observer
+class App extends React.Component {
+  @observable loading = false;
+  @observable loadMessage = "";
+  loadMessages = [
+		"No subtitles",
+		"Loading error :(",
+		"Reload YouTube please"
+	];
+
   componentDidMount() {
-    // this.changeTheme('dark')
+    // store.main.changeTheme('dark')
     this.messageListener = e => {
-			if (e.origin !== window.location.origin) return;
+      if (e.origin !== window.location.origin) return;
       const message = e.data;
       if (message.type === "changePage") {
-        this.setState({
-          loading: true
-        });
+        this.loading = true;
       } else if (message.type === "subtitles") {
         const subtitles = message.data;
         let newSubtitles;
@@ -81,17 +39,15 @@ export default class App extends React.Component {
         if (subtitles.error) {
           newText = this.loadMessages[1];
         }
-        this.setState({
-          loading: false,
-          subtitles: newSubtitles,
-          currentLanguage: this.getLanguages(newSubtitles)[0],
-          loadMessage: newText
-        });
+        this.loading = false;
+        this.loadMessage = newText;
+        store.subtitles.setSubtitles(newSubtitles);
+        store.subtitles.changeLang(store.subtitles.subtitleLanguages[0]);
       } else if (message.type === "videoEvents") {
         if (message.data.timeupdate) {
-          this.setState({ videoTime: message.data.timeupdate });
+          store.subtitles.setVideoTime(message.data.timeupdate);
         }
-      } 
+      }
     };
     window.addEventListener("message", this.messageListener, false);
   }
@@ -100,41 +56,21 @@ export default class App extends React.Component {
   }
   render() {
     let subtitleListMenu, subtitleList;
-    if (this.state.subtitles && this.state.currentLanguage) {
-      subtitleListMenu = (
-        <SubtitleListMenu
-          languages={this.getLanguages()}
-          currentLanguage={this.state.currentLanguage}
-          changeLang={this.changeLang}
-          favoriteFilter={this.state.favoriteFilter}
-          changeFavoriteFilter={this.changeFavoriteFilter}
-          searchText={this.state.searchText}
-          changeSearchText={this.changeSearchText}
-        />
-      );
-      subtitleList = (
-        <SubtitleList
-          subtitles={this.state.subtitles[this.state.currentLanguage]}
-          videoTime={this.state.videoTime}
-          favoriteFilter={this.state.favoriteFilter}
-          searchText={this.state.searchText}
-        ></SubtitleList>
-      );
+    if (store.subtitles.subtitles && store.subtitles.subtitleLanguage) {
+      subtitleListMenu = <SubtitleListMenu />;
+      subtitleList = <SubtitleList />;
     } else {
-      subtitleList = (
-        <div className="load-message">{this.state.loadMessage}</div>
-      );
+      subtitleList = <div className="load-message">{this.loadMessage}</div>;
     }
     const spinner = (
       <Loader type="TailSpin" color="var(--main)" height={80} width={80} />
     );
     return (
-      <div className="App">
+      <Provider {...store}>
         {subtitleListMenu}
-        <div className="content">
-          {this.state.loading ? spinner : subtitleList}
-        </div>
-      </div>
+        <div className="content">{this.loading ? spinner : subtitleList}</div>
+      </Provider>
     );
   }
 }
+export default App;

@@ -26,6 +26,9 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 
+const babelPluginDecorator = require('@babel/plugin-proposal-decorators');
+const babelPluginTransformClass = require('@babel/plugin-proposal-class-properties');
+
 const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -383,8 +386,10 @@ module.exports = function(webpackEnv) {
                 ),
                 
                 plugins: [
+									[babelPluginDecorator,{ "legacy": true }],
+									[babelPluginTransformClass,{'loose':true}],
                   [
-                    require.resolve('babel-plugin-named-asset-import'),
+										require.resolve('babel-plugin-named-asset-import'),
                     {
                       loaderMap: {
                         svg: {
