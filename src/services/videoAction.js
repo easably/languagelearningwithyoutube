@@ -10,6 +10,11 @@ export default {
 		send({
 			pause: true
 		})
+	},
+	play: function(){
+		send({
+			play: true
+		})
 	}
 };
 function send(data){

@@ -16,13 +16,11 @@
     ],
     "win": {
         "icon": "favicons/favicon.png",
-        "target": ["portable"],
-        "extraFiles": ["mpv/win/"]
+        "target": ["portable"]
     },
     "mac": {
         "icon": "favicons/favicon.png",
-        "target": ["dmg"],
-        "extraFiles": ["mpv/mac/"]
+        "target": ["dmg"]
     },
     "linux": {
         "icon": "dist",
