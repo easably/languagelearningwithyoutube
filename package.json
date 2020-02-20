@@ -85,10 +85,10 @@
     "youtube-dl": "^2.0.1"
   },
   "scripts": {
-    "react-start-app": "REACT_APP_ENTRY=app node scripts/start.js",
-    "react-build-app": "REACT_APP_ENTRY=app node scripts/build.js",
-    "react-start-nav": "REACT_APP_ENTRY=nav node scripts/start.js",
-    "react-build-nav": "REACT_APP_ENTRY=nav node scripts/build.js",
+    "react-start-app": "cross-env REACT_APP_ENTRY=app node scripts/start.js",
+    "react-build-app": "cross-env REACT_APP_ENTRY=app node scripts/build.js",
+    "react-start-nav": "cross-env REACT_APP_ENTRY=nav node scripts/start.js",
+    "react-build-nav": "cross-env REACT_APP_ENTRY=nav node scripts/build.js",
     "react-test": "node scripts/test.js --env=jsdom",
     "react-eject": "node scripts/eject.js",
     "electron-build": "electron-builder",
